@@ -1,5 +1,5 @@
-//Page to handle the Navigation including the bottom bar
 
+// React Components
 import { React, useEffect } from "react";
 import {
   Alert,
@@ -9,24 +9,31 @@ import {
   View,
   ImageBackground,
 } from "react-native";
+
+
+// Handling the Navigation Part
 import { CurvedBottomBarExpo } from "react-native-curved-bottom-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+const Stack = createNativeStackNavigator();
+
+
+// Other Pages/ Features that are navigated to
 import Map from "./pages/map/map";
 import Prices from "./pages/price/prices";
 import HomeScreen from "./pages/Home/Home";
-const Screen1 = () => {
-  return <View style={styles.screen1} />;
-};
+import Upload from "./pages/upload/upload";
 
-const Screen2 = () => {
-  return <View style={styles.screen2} />;
-};
 
-export default function Navigate() {
+// Main Function for navigation
+export default function Navigate({ navigation }) {
+
+  // Code for bottom Bar
   const _renderIcon = (routeName, selectedTab) => {
     let icon = "";
 
+  // Icons for bottom bar
     switch (routeName) {
       case "Saved":
         icon = "bookmark-outline";
@@ -62,8 +69,17 @@ export default function Navigate() {
     );
   };
 
+  // I can't comment inside the render function but I can explain from up here
+
+    // CurvedBottomBarExpo.Navigator is for the curved bottom bar
+
+    // The render circle handles the middle plus sign
+
+    // Under that are all pages being navigated too
   return (
+
     <NavigationContainer>
+
   <CurvedBottomBarExpo.Navigator
     type="DOWN"
     screenOptions={{headerShown:false}}
@@ -79,23 +95,25 @@ export default function Navigate() {
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigate("Upload")}
-        >
+          >
           <Ionicons name={"add-outline"} color="gray" size={25} />
         </TouchableOpacity>
       </Animated.View>
     )}
     tabBar={renderTabBar}
   >
+
     <CurvedBottomBarExpo.Screen
       name="Home"
       component={() => <HomeScreen />}
       position="LEFT"
       options={{ headerShown: false }}
-      
     />
+
+
     <CurvedBottomBarExpo.Screen
       name="Saved"
-      component={() => <Screen1 />}
+      component={() => <View style={styles.screen1} />}
       position="LEFT"
       options={{ headerShown: false }} 
     />
@@ -111,12 +129,19 @@ export default function Navigate() {
       position="RIGHT"
       options={{ headerShown: false}}
     />
+    <CurvedBottomBarExpo.Screen
+      name="Upload"
+      component={() => <Upload />}
+    />
+
   </CurvedBottomBarExpo.Navigator>
-</NavigationContainer>
+    </NavigationContainer>
 
   );
 }
 
+
+// This is a stylesheet, you can think of it as as CSS sheet
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -169,7 +194,7 @@ export const styles = StyleSheet.create({
   },
   screen1: {
     flex: 1,
-    backgroundColor: "#BFEFFF",
+    backgroundColor: "#8AE3A8",
   },
   screen2: {
     flex: 1,

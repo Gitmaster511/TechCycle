@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, TextInput,StyleSheet, TouchableOpacity, ScrollView, FlatList, Image, Dimensions } from 'react-native';
+import Animated, {interpolate, Extrapolate, useSharedValue, useAnimatedStyle} from "react-native-reanimated";
 
 
 //Firebase/Firestore
@@ -16,14 +17,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from '@react-navigation/stack';
 
 // Fonts/Icons
-
 import Ionicons from "@expo/vector-icons/Ionicons";
-import AppLoading from 'expo-app-loading';
-
-//Import Pages
-import ItemDetailsScreen from "./itemdetails";
-import Prices from "../price/prices";
-import Animated, {interpolate, Extrapolate, useSharedValue, useAnimatedStyle} from "react-native-reanimated";
 import {
   useFonts,
   InterTight_100Thin,
@@ -32,16 +26,24 @@ import {
   Inter_500Medium
 } from "@expo-google-fonts/dev";
 
+
+//Import Pages
+import ItemDetailsScreen from "./itemdetails";
+import Prices from "../price/prices";
+
+
 //Constants for Carousels
 const SRC_WIDTH = Dimensions.get("window").width;
 const CARD_LENGTH = SRC_WIDTH * 0.8;
 const SPACING = SRC_WIDTH * 0.02;
 const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
 
+// For custom Carousel
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
 function CarouselItem() {
 
+  // Loading Custom fonts
   let [fontsLoaded] = useFonts({
     InterTight_100Thin,
   InterTight_400Regular,
@@ -58,27 +60,34 @@ function CarouselItem() {
   const [searchText, setSearchText] = useState('');
   const [trendingData, setTrendingData] = useState([]);
   const [forYouData, setForYouData] = useState([]);
-  const [itemData, setItemData] = useState(null);
-  const navigation = useNavigation(); // Initialize navigation hook
+  const [storeData, setStoreData] = useState([]);
 
+  // For navigation  (When you press on a image it should navigate to another page)
+  const navigation = useNavigation();
+
+  // Sending info along with it when it navigates
   const navigateToDetails = (item) => {
     if (item) {
-      // Navigate to the details screen and pass the data as params
       navigation.navigate('ItemDetailsScreen', {
         title: item.title,
-        imageUrl: item.imageUrl,
+        imageUrl: item.imageURL,
         desc: item.desc, 
         date2: item.date,
-        price: item.price
+        price: item.price,
+        condition: item.condition
       });
 
     }
   };
 
+  // Fetch trending data from Firebase
   const [activeIndex, setActiveIndex] = useState(0);useEffect(() => {
     const fetchTrendingData = async () => {
+
+      {/* Search for data collection called trending */}
       const trendingCollectionRef = collection(db, 'trending'); // Reference to the 'trending' collection
       try {
+         {/* Get all the data in the trending collection, map it and put it into a useState hook / variabel */}
         const trendingQuerySnapshot = await getDocs(trendingCollectionRef);
         const trendingData = trendingQuerySnapshot.docs.map((doc) => doc.data());
         setTrendingData(trendingData);
@@ -86,9 +95,10 @@ function CarouselItem() {
         console.error('Error fetching trending data:', error);
       }
     };
-  
+    // Fetch for you data from Firebase (fetch process is the same)
+
     const fetchForYouData = async () => {
-      const forYouCollectionRef = collection(db, 'forYou'); // Reference to the 'forYou' collection
+      const forYouCollectionRef = collection(db, 'foryou'); // Reference to the 'forYou' collection
       try {
         const forYouQuerySnapshot = await getDocs(forYouCollectionRef);
         const forYouData = forYouQuerySnapshot.docs.map((doc) => doc.data());
@@ -97,17 +107,32 @@ function CarouselItem() {
         console.error('Error fetching "For You" data:', error);
       }
     };
-  
-    fetchTrendingData();
+    // Fetch similiar data from Firebase (fetch process is the same)
+    const fetchsimiliarData = async () => {
+      const storeCollectionRef = collection(db, 'store'); // Reference to the 'forYou' collection
+      try {
+        const storeQuerySnapshot = await getDocs(storeCollectionRef);
+        const storeData = storeQuerySnapshot.docs.map((doc) => doc.data());
+        setStoreData(storeData);
+      } catch (error) {
+        console.error('Error fetching "For You" data:', error);
+      }
+    };
+    // Running all three functions
     fetchForYouData();
+    fetchsimiliarData();
+    fetchTrendingData();
+
   }, []);
+
+  // Catch case for loading fonts
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return <View/>;
   } else {
 
   return (
     <ScrollView>
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#8AE3A8' }}>
 
     
     <View style={styles.iconContainer} >
@@ -125,6 +150,9 @@ function CarouselItem() {
         placeholderTextColor="gray"
       />
     </View>
+
+    {/* Welcome Text */}
+
     <Text style={{textAlign: 'center', fontSize: 30, fontFamily: "InterTight_400Regular"}}>
         Welcome Back Alaap! 
       </Text>
@@ -136,10 +164,11 @@ function CarouselItem() {
 
     </View>
 
+      {/* Trending TExt with custom font */}
 
       <Text style={{fontSize: 24,margin: 16, fontFamily: 'InterTight_400Regular'}}>Trending</Text>
 
-
+      {/* First of three carousels, parameters should be pretty self explanatory*/}
     <Animated.View>
       <AnimatedFlatList 
         scrollEventThrottle={16}
@@ -151,19 +180,24 @@ function CarouselItem() {
         snapToAlignment={"center"}
         data={trendingData}
         horizontal={true}
+        // This render item loops through the trendingData hook and shows all the data in the carousel
         renderItem={({ item }) => (
-            <View style={styles.carouselItem}>
-              <Image source={{ uri: item.imageUrl }} style={styles.carouselImage} />
-              <Text style={styles.carouselText}>{item.title}</Text>
-            </View>         
+          <TouchableOpacity onPress={() => navigateToDetails(item)}> 
+          <View style={styles.carouselItem}>
+            <Image source={{ uri: item.imageURL }} style={styles.carouselImage} />
+            <Text style={styles.carouselText}>{item.title}</Text>
+          </View>
+        </TouchableOpacity>          
           )}
-        //@ts-ignore
+
         keyExtractor={(item) => item.id}
 
       />
     </Animated.View>
 
       {/* For You Carousel of images */}
+      {/* Same thing as the other carousel*/}
+
       <Text style={{fontSize: 24,margin: 16, fontFamily: 'InterTight_400Regular'}}>For You</Text>
       <Animated.View>
       <AnimatedFlatList 
@@ -174,22 +208,23 @@ function CarouselItem() {
         disableIntervalMomentum={true}
         disableScrollViewPanResponder={true}
         snapToAlignment={"center"}
-        data={trendingData}
+        data={forYouData}
         horizontal={true}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigateToDetails(item)}> 
-                <View style={styles.carouselItem}>
-                  <Image source={{ uri: item.imageUrl }} style={styles.carouselImage} />
-                  <Text style={styles.carouselText}>{item.title}</Text>
-                </View>
-              </TouchableOpacity>  
-     
+          <View style={styles.carouselItem}>
+            <Image source={{ uri: item.imageURL }} style={styles.carouselImage} />
+            <Text style={styles.carouselText}>{item.title}</Text>
+          </View>
+        </TouchableOpacity>          
           )}
+        //@ts-ignore
         keyExtractor={(item) => item.id}
 
       />
     </Animated.View>
-      {/* Recently Searched Carousel of images */}
+      {/* Similiar to Recently Searched Carousel of images */}
+      {/* Same thing as the other carousel*/}
 
     <Text style={{fontSize: 24,margin: 16, fontFamily: 'InterTight_400Regular'}}>Similiar to Recently Searched</Text>
       <Animated.View>
@@ -201,12 +236,12 @@ function CarouselItem() {
         disableIntervalMomentum={true}
         disableScrollViewPanResponder={true}
         snapToAlignment={"center"}
-        data={trendingData}
+        data={storeData}
         horizontal={true}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigateToDetails(item)}> 
                 <View style={styles.carouselItem}>
-                  <Image source={{ uri: item.imageUrl }} style={styles.carouselImage} />
+                  <Image source={{ uri: item.imageURL }} style={styles.carouselImage} />
                   <Text style={styles.carouselText}>{item.title}</Text>
                 </View>
               </TouchableOpacity>  
@@ -223,10 +258,11 @@ function CarouselItem() {
 
 }
 
-
+// I need a navigation since this navigates between two pages (Home and ItemDetails)
 export default function HomeScreen() {
     const Stack = createStackNavigator();
     return (
+      // independant=true seperates it from the other navigation container
       <NavigationContainer independent={true} >
       <Stack.Navigator>
         <Stack.Screen
@@ -242,7 +278,7 @@ export default function HomeScreen() {
 
 }
 
-
+// Again CSS
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',

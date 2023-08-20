@@ -1,17 +1,21 @@
+
+// React Components
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
+
+
+// Map components
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from "expo-location";
 
 export default function Map() {
 
-
-    //Initial Map Region
+  //Initial Map Region
   const [mapRegion, setmapRegion] = useState({
     latitude: 37.334547282326014, 
     longitude: -122.00911805385397,
-    latitudeDelta: 0.0009,
-    longitudeDelta: 0.004,
+    latitudeDelta: 0.009,
+    longitudeDelta: 0.04,
   });
 
   return (
@@ -75,8 +79,8 @@ export default function Map() {
 
   );
 }
-{/* Styles/CSS */}
 
+{/* Styles/CSS */}
 const styles = StyleSheet.create({
   container: {
     flex: 1,

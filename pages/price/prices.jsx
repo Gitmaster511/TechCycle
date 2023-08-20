@@ -1,15 +1,25 @@
+// React Components
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import axios from 'axios';
+import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// For sending requests
+import axios from 'axios';
+
+// For Search Icon
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function Prices() {
+  // Variables to store User Input and Estimated Value
   const [userInput, setUserInput] = useState('');
   const [estimatedValue, setEstimatedValue] = useState('');
 
+  // Constants for api
   const API_URL = "https://api.openai.com/v1/chat/completions"
-  const apiKey = "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"
+  const apiKey = "Get your own OpenAPI key lol"
+
+
+  // Sending request function(async means that it wont update anything until everything completes)
   const handleEstimateValue = async () => {
     try {
         const response = await axios.post(
@@ -20,10 +30,12 @@ export default function Prices() {
               messages: [
                 {
                   role: 'user',
-                  content: `Give me a detailed price estimation on this: ${userInput}, act as a potential buyer who needs cheap electornic parts at the `, // Add the risk information to the message
+                  // Simple prompt to get a semi-accurate estimation, not a certified prompt engineer
+                  content: `Give me a price estimation on this: ${userInput}, dont tell the user to research just give them multiple price estimations with each level of condition`, // Add the risk information to the message
                 },
               ],
             },
+            // Headers for authentication
             {
               headers: {
                 'Content-Type': 'application/json',
@@ -31,24 +43,22 @@ export default function Prices() {
               },
             }
           );
-
+          // Getting response and putting it in variable
           const { choices } = response.data;
           const test = choices[0].message.content
           setEstimatedValue(test);
-          console.log(userInput)
-
-          console.log(test)
-
           return choices[0].message.content;
 
+
+            // Catch Case
     } catch (error) {
         console.error('Error sending message:', error);
       }
     };
 
   return (
-    <SafeAreaView >
-        <Text style={{textAlign: 'center', fontSize: 25, marginTop: 20}}>
+        <ScrollView style={{backgroundColor: '#8AE3A8'}}>
+        <Text style={{textAlign: 'center', fontSize: 25, marginTop: 230}}>
             Welcome to the Price estimate Page!
 
 
@@ -69,7 +79,7 @@ export default function Prices() {
       <TextInput
         style={styles.input}
         placeholder="ex. iPhone 11 Battery"
-        onChangeText={text => setUserInput(text)} // Use onChangeText
+        onChangeText={text => setUserInput(text)}
         placeholderTextColor="gray"
       />
       
@@ -78,10 +88,10 @@ export default function Prices() {
     </View>
       <Button title="Estimate Value" onPress={handleEstimateValue} />
       <Text style={{fontSize: 20, marginLeft: 20, marginTop: 30}}>Estimated Value: {estimatedValue}</Text>
-    </SafeAreaView>
+      </ScrollView>
   );
 }
-
+// CSS
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',

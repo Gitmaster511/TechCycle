@@ -9,9 +9,12 @@ import { Navigation } from "@react-navigation/native";
 import { ScrollView } from 'react-native-gesture-handler';
 
 // ItemDetailsScreen component
+
+// To explain this simply, everytime a user selects a image on the carousel it navigates to this page and sends data pulled from firebase(desciption, condition) with it
 const ItemDetailsScreen = ({ route }) => {
   // Destructure data from route parameters
-  const { title, imageUrl, desc, date2, price } = route.params;
+  const { title, imageUrl, desc, date2, price, condition } = route.params;
+
   return (
     <ScrollView>
 
@@ -26,14 +29,23 @@ const ItemDetailsScreen = ({ route }) => {
     borderBottomWidth: StyleSheet.hairlineWidth,
   }}
 />
+
+      {/* Displaying Description, Condition and Price */}
+
       <Text style={styles.desc}>
       {desc}
+      </Text>
+
+      <Text style={styles.desc}>
+      Condition: {condition}
       </Text>
 
       <Text style={styles.price}>
       {price}
       </Text>
+
       {/* Search Bar and Send Button */}
+
       <View style={{flex: 1}}/>
       <TouchableOpacity
         style={styles.buyButton}
@@ -45,6 +57,7 @@ const ItemDetailsScreen = ({ route }) => {
       </TouchableOpacity>
 
 
+      {/* Message send bar */}
 
       <View style={styles.searchBarContainer}>
         <TextInput
@@ -59,10 +72,10 @@ const ItemDetailsScreen = ({ route }) => {
 );
 };
 
+// Again CSS
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightgray',
   },
   desc : {
     fontSize: 20,
@@ -108,7 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: 'lightgray',
+    borderTopColor: 'black',
     marginBottom: 80
   },
   input: {
