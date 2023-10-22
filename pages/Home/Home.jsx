@@ -251,7 +251,9 @@ function CarouselItem() {
 
       />
     </Animated.View>
+    <View style={{height: 90}}/>
     </SafeAreaView>
+
     </ScrollView>
   );
 }

@@ -16,8 +16,7 @@ export default function Prices() {
 
   // Constants for api
   const API_URL = "https://api.openai.com/v1/chat/completions"
-  const apiKey = "Get your own OpenAPI key lol"
-
+  const apiKey = "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"
 
   // Sending request function(async means that it wont update anything until everything completes)
   const handleEstimateValue = async () => {

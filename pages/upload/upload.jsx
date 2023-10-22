@@ -135,11 +135,11 @@ export default function Upload() {
     );
       // Sending the rest of the data + the URL to a firestore database
     try {
-      const docRef = await addDoc(collection(db, "store"), {
+      const docRef = await addDoc(collection(db, "foryou"), {
         title: deviceName,
         desc: notes,
         price: price,
-        imageURL: url2,
+        imageURL: "https://firebasestorage.googleapis.com/v0/b/techcycle-eefe8.appspot.com/o/Pictures%2F1692499543854?alt=media&token=6deed753-1ea1-4aa6-9fb6-ccd7b1015ce8",
         condition: condition2,
       });
 
@@ -155,8 +155,10 @@ export default function Upload() {
   };
 
   return (
+    <ScrollView>
+
         <View style={styles.container}>
-            <Text style={{fontSize: 40, textAlign: 'center', marginBottom: 90}}>
+            <Text style={{fontSize: 40, textAlign: 'center', marginBottom: 90, marginTop: 160}}>
                 Upload an item!
 
             </Text>
@@ -218,7 +220,9 @@ export default function Upload() {
       <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Add Item</Text>
       </TouchableOpacity>
-        </View>         
+        </View>  
+              
+    </ScrollView>       
   );
 }
 // CSS 
@@ -227,6 +231,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         justifyContent: 'center',
+        marginBottom: 90
       },
   label: {
     fontSize: 16,

@@ -6,8 +6,16 @@ import { Text, View } from "react-native";
 // Expo Packages (Font, Splashscreen) 
 import { useFonts } from 'expo-font';
 import * as SplashScreen from "expo-splash-screen";
-
 SplashScreen.preventAutoHideAsync()
+
+
+import { LogBox } from 'react-native';
+
+// Ignore log notification by message
+LogBox.ignoreLogs(['Warning: ...']);
+
+//Ignore all log notifications
+LogBox.ignoreAllLogs();
 
 
 
@@ -39,7 +47,7 @@ export default function App() {
 
         // Then tell the application to render
         setAppIsReady(true);
-      }, 1000);
+      }, 2000);
     }
     prepare();
   }, []);
